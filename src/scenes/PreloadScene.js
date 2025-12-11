@@ -151,12 +151,11 @@ export default class PreloadScene extends Phaser.Scene {
             frameRate: 10
         });
 
-        // Small Mario walk (frame 1 - running, frame 3 - standing straight)
+        // Small Mario walk (frame 1 - running)
         this.anims.create({
             key: 'mario-walk',
             frames: [
-                { key: 'mario', frame: 1 },
-                { key: 'mario', frame: 3 }
+                { key: 'mario', frame: 1 }
             ],
             frameRate: 10,
             repeat: -1

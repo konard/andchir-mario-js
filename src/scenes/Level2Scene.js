@@ -35,6 +35,7 @@ export default class Level2Scene extends Phaser.Scene {
         this.createCoins();
         this.createEnemies();
         this.createPipes();
+        this.createStaircase();
         this.createGoal();
 
         // Create player
@@ -155,6 +156,15 @@ export default class Level2Scene extends Phaser.Scene {
             pipeSprite.setOrigin(0, 0);
             pipeSprite.setDisplaySize(64, pipe.height);
             pipeSprite.refreshBody();
+        });
+    }
+
+    createStaircase() {
+        this.levelConfig.staircase.forEach(block => {
+            const tile = this.brickGroup.create(block.x, block.y, 'brick');
+            tile.setOrigin(0, 0);
+            tile.refreshBody();
+            tile.canBreak = false; // Staircase blocks should not be breakable
         });
     }
 

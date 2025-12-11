@@ -13,6 +13,9 @@ export default class Level2Scene extends Phaser.Scene {
     create() {
         this.levelConfig = Level2Config;
 
+        // Set level name in registry for UI
+        this.registry.set('levelName', this.levelConfig.name);
+
         // Set world bounds
         this.physics.world.setBounds(0, 0, this.levelConfig.width, this.levelConfig.height);
 

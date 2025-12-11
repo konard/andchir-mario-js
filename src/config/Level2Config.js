@@ -2,7 +2,7 @@
 // Second level with increased difficulty
 
 export default {
-    name: 'Level 2-1',
+    name: 'WORLD 1-2',
     width: 6400,
     height: 600,
     backgroundColor: '#5c94fc',

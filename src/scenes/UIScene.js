@@ -70,6 +70,7 @@ export default class UIScene extends Phaser.Scene {
     update() {
         const player = this.registry.get('player');
         const timeLeft = this.registry.get('timeLeft');
+        const levelName = this.registry.get('levelName');
 
         if (player) {
             this.scoreText.setText('SCORE: ' + player.score);
@@ -86,6 +87,10 @@ export default class UIScene extends Phaser.Scene {
             } else {
                 this.timeText.setFill('#ffffff');
             }
+        }
+
+        if (levelName !== undefined) {
+            this.levelText.setText(levelName);
         }
     }
 }

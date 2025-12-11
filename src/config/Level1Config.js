@@ -2,7 +2,7 @@
 // This structure makes it easy to add new levels
 
 export default {
-    name: 'Level 1-1',
+    name: 'WORLD 1-1',
     width: 6400, // Level width in pixels
     height: 600,
     backgroundColor: '#5c94fc',

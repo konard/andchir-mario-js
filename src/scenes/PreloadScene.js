@@ -155,8 +155,8 @@ export default class PreloadScene extends Phaser.Scene {
         this.anims.create({
             key: 'mario-walk',
             frames: [
-                { key: 'mario', frame: 1 },
-                { key: 'mario', frame: 2 }
+                { key: 'mario', frame: 0 },
+                { key: 'mario', frame: 1 }
             ],
             frameRate: 10,
             repeat: -1

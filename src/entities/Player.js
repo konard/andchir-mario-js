@@ -57,7 +57,10 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
             this.isJumping = false;
         }
 
-        if (Phaser.Input.Keyboard.JustDown(this.spaceKey) && onGround) {
+        const jumpPressed = Phaser.Input.Keyboard.JustDown(this.spaceKey) ||
+                          Phaser.Input.Keyboard.JustDown(this.cursors.up);
+
+        if (jumpPressed && onGround) {
             this.setVelocityY(this.jumpVelocity);
             this.isJumping = true;
         }

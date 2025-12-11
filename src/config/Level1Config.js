@@ -94,10 +94,10 @@ export default {
     ],
 
     // Goal (flag)
-    // goal: {
-    //     x: 6200,
-    //     y: 400
-    //  },
+    goal: {
+         x: 6200,
+         y: 400
+    },
 
     // House (level transition to Level 2)
     house: {

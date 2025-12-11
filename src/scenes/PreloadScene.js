@@ -41,6 +41,9 @@ export default class PreloadScene extends Phaser.Scene {
 
         // Flag
         this.createFlag();
+
+        // House (for level transition)
+        this.createHouse();
     }
 
     createGroundTile() {
@@ -133,6 +136,35 @@ export default class PreloadScene extends Phaser.Scene {
         graphics.fillStyle(0xff0000);
         graphics.fillTriangle(2, 0, 2, 20, 32, 10);
         graphics.generateTexture('flag', 32, 64);
+        graphics.destroy();
+    }
+
+    createHouse() {
+        const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+
+        // House walls
+        graphics.fillStyle(0xcd853f);
+        graphics.fillRect(0, 32, 64, 64);
+
+        // Door
+        graphics.fillStyle(0x8b4513);
+        graphics.fillRect(20, 56, 24, 40);
+
+        // Roof
+        graphics.fillStyle(0xff0000);
+        graphics.fillTriangle(0, 32, 32, 0, 64, 32);
+
+        // Roof outline
+        graphics.lineStyle(2, 0x8b0000);
+        graphics.lineBetween(0, 32, 32, 0);
+        graphics.lineBetween(32, 0, 64, 32);
+
+        // Window
+        graphics.fillStyle(0x87ceeb);
+        graphics.fillRect(10, 42, 12, 12);
+        graphics.fillRect(42, 42, 12, 12);
+
+        graphics.generateTexture('house', 64, 96);
         graphics.destroy();
     }
 

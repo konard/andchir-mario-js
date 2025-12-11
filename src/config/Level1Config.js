@@ -96,5 +96,11 @@ export default {
     goal: {
         x: 6200,
         y: 400
+    },
+
+    // House (level transition to Level 2)
+    house: {
+        x: 6300,
+        y: 472
     }
 };

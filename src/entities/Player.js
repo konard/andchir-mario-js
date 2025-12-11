@@ -7,6 +7,11 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
+        // Scale Mario sprite to be visible (16x16 sprite scaled to 2x = 32x32)
+        this.setScale(2);
+        this.baseScale = 2;
+        this.powerUpScale = 3;
+
         // Player properties
         this.setCollideWorldBounds(true);
         this.setBounce(0);
@@ -93,7 +98,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     collectMushroom() {
         if (!this.isPoweredUp) {
             this.isPoweredUp = true;
-            this.setScale(1.5);
+            this.setScale(this.powerUpScale);
             this.score += 1000;
         }
     }
@@ -105,7 +110,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
 
         if (this.isPoweredUp) {
             this.isPoweredUp = false;
-            this.setScale(1);
+            this.setScale(this.baseScale);
             this.becomeInvincible();
         } else {
             this.die();
@@ -130,7 +135,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     respawn() {
         this.setPosition(100, 100);
         this.setTint(0xffffff);
-        this.setScale(1);
+        this.setScale(this.baseScale);
         this.isPoweredUp = false;
         this.scene.physics.world.enable(this);
         this.becomeInvincible();

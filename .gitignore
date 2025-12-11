@@ -26,3 +26,9 @@ yarn-error.log*
 
 # Testing
 coverage/
+
+# Experiments and temporary files
+experiments/
+.playwright-mcp/
+game_server.log
+package-lock.json

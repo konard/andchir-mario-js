@@ -6,10 +6,10 @@ export default class PreloadScene extends Phaser.Scene {
     }
 
     preload() {
-        // Load Mario sprite sheet with correct dimensions (32x40 as specified in issue #3)
+        // Load Mario sprite sheet (16x16 frames, will be scaled to 32x40 display size)
         this.load.spritesheet('mario', 'src/media/sprite_mario.png', {
-            frameWidth: 32,
-            frameHeight: 40
+            frameWidth: 16,
+            frameHeight: 16
         });
 
         // Create other assets using Graphics API

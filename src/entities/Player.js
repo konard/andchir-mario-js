@@ -64,7 +64,9 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
                           Phaser.Input.Keyboard.JustDown(this.cursors.up);
 
         if (jumpPressed && onGround) {
-            this.setVelocityY(this.jumpVelocity);
+            // When powered up, jump height increases by 20%
+            const jumpVelocity = this.isPoweredUp ? this.jumpVelocity * 1.2 : this.jumpVelocity;
+            this.setVelocityY(jumpVelocity);
             this.isJumping = true;
         }
     }

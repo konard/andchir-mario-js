@@ -151,9 +151,57 @@ export default {
         { x: 5600, y: 504, height: 64 }
     ],
 
-    // Goal (flag)
+    // Staircase before goal (classic Mario pyramid)
+    staircase: [
+        // Step 1 (bottom, 1 block high)
+        { x: 5968, y: 536 },
+        // Step 2 (2 blocks high)
+        { x: 6000, y: 536 },
+        { x: 6000, y: 504 },
+        // Step 3 (3 blocks high)
+        { x: 6032, y: 536 },
+        { x: 6032, y: 504 },
+        { x: 6032, y: 472 },
+        // Step 4 (4 blocks high)
+        { x: 6064, y: 536 },
+        { x: 6064, y: 504 },
+        { x: 6064, y: 472 },
+        { x: 6064, y: 440 },
+        // Step 5 (5 blocks high)
+        { x: 6096, y: 536 },
+        { x: 6096, y: 504 },
+        { x: 6096, y: 472 },
+        { x: 6096, y: 440 },
+        { x: 6096, y: 408 },
+        // Step 6 (6 blocks high)
+        { x: 6128, y: 536 },
+        { x: 6128, y: 504 },
+        { x: 6128, y: 472 },
+        { x: 6128, y: 440 },
+        { x: 6128, y: 408 },
+        { x: 6128, y: 376 },
+        // Step 7 (7 blocks high)
+        { x: 6160, y: 536 },
+        { x: 6160, y: 504 },
+        { x: 6160, y: 472 },
+        { x: 6160, y: 440 },
+        { x: 6160, y: 408 },
+        { x: 6160, y: 376 },
+        { x: 6160, y: 344 },
+        // Step 8 (8 blocks high, top of staircase)
+        { x: 6192, y: 536 },
+        { x: 6192, y: 504 },
+        { x: 6192, y: 472 },
+        { x: 6192, y: 440 },
+        { x: 6192, y: 408 },
+        { x: 6192, y: 376 },
+        { x: 6192, y: 344 },
+        { x: 6192, y: 312 }
+    ],
+
+    // Goal (flag) - now grounded with flag pole touching the ground
     goal: {
-        x: 6200,
-        y: 400
+        x: 6240,
+        y: 536
     }
 };

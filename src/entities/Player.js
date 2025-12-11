@@ -67,16 +67,16 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         // Flip sprite based on direction
         this.setFlipX(!this.facingRight);
 
-        // Simple visual feedback based on state
+        // Play appropriate animation based on state
         if (!this.body.touching.down) {
-            // In air - slightly rotate
-            this.setTint(0xaaaaff);
+            // In air - jump animation
+            this.anims.play('mario-jump', true);
         } else if (this.body.velocity.x !== 0) {
-            // Moving - normal color
-            this.setTint(0xffffff);
+            // Moving - walk animation
+            this.anims.play('mario-walk', true);
         } else {
-            // Standing still
-            this.setTint(0xffffff);
+            // Standing still - idle animation
+            this.anims.play('mario-idle', true);
         }
     }
 

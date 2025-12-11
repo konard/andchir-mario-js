@@ -6,14 +6,17 @@ export default class PreloadScene extends Phaser.Scene {
     }
 
     preload() {
-        // Create assets using Graphics API since we don't have image files
+        // Load Mario sprite sheet
+        this.load.spritesheet('mario', 'src/media/sprite_mario.png', {
+            frameWidth: 16,
+            frameHeight: 16
+        });
+
+        // Create other assets using Graphics API
         this.createAssets();
     }
 
     createAssets() {
-        // Mario sprite
-        this.createMarioSprite();
-
         // Ground tiles
         this.createGroundTile();
 
@@ -37,23 +40,6 @@ export default class PreloadScene extends Phaser.Scene {
 
         // Flag
         this.createFlag();
-    }
-
-    createMarioSprite() {
-        const graphics = this.make.graphics({ x: 0, y: 0, add: false });
-
-        // Small Mario - standing
-        graphics.fillStyle(0xff0000);
-        graphics.fillRect(4, 0, 8, 4);
-        graphics.fillStyle(0xffd700);
-        graphics.fillRect(0, 4, 16, 4);
-        graphics.fillStyle(0xff0000);
-        graphics.fillRect(0, 8, 16, 8);
-        graphics.fillStyle(0x8B4513);
-        graphics.fillRect(4, 16, 8, 8);
-
-        graphics.generateTexture('mario', 16, 24);
-        graphics.destroy();
     }
 
     createGroundTile() {
@@ -150,6 +136,40 @@ export default class PreloadScene extends Phaser.Scene {
     }
 
     create() {
+        // Create Mario animations
+        this.createMarioAnimations();
+
         this.scene.start('MenuScene');
+    }
+
+    createMarioAnimations() {
+        // Small Mario idle (frame 0)
+        this.anims.create({
+            key: 'mario-idle',
+            frames: [{ key: 'mario', frame: 0 }],
+            frameRate: 10
+        });
+
+        // Small Mario walk (frames 1, 2, 3)
+        this.anims.create({
+            key: 'mario-walk',
+            frames: this.anims.generateFrameNumbers('mario', { start: 1, end: 3 }),
+            frameRate: 10,
+            repeat: -1
+        });
+
+        // Small Mario jump (frame 5)
+        this.anims.create({
+            key: 'mario-jump',
+            frames: [{ key: 'mario', frame: 5 }],
+            frameRate: 10
+        });
+
+        // Small Mario skid (frame 4)
+        this.anims.create({
+            key: 'mario-skid',
+            frames: [{ key: 'mario', frame: 4 }],
+            frameRate: 10
+        });
     }
 }

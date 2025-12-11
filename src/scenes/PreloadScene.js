@@ -144,32 +144,35 @@ export default class PreloadScene extends Phaser.Scene {
     }
 
     createMarioAnimations() {
-        // Small Mario idle (frame 0)
+        // Small Mario idle (frame 0 - standing)
         this.anims.create({
             key: 'mario-idle',
             frames: [{ key: 'mario', frame: 0 }],
             frameRate: 10
         });
 
-        // Small Mario walk (frames 1, 2, 3)
+        // Small Mario walk (frame 1 - running, frame 3 - standing straight)
         this.anims.create({
             key: 'mario-walk',
-            frames: this.anims.generateFrameNumbers('mario', { start: 1, end: 3 }),
+            frames: [
+                { key: 'mario', frame: 1 },
+                { key: 'mario', frame: 3 }
+            ],
             frameRate: 10,
             repeat: -1
         });
 
-        // Small Mario jump (frame 5)
+        // Small Mario jump (frame 5 - jump)
         this.anims.create({
             key: 'mario-jump',
             frames: [{ key: 'mario', frame: 5 }],
             frameRate: 10
         });
 
-        // Small Mario skid (frame 4)
+        // Small Mario skid (frame 2 - turned)
         this.anims.create({
             key: 'mario-skid',
-            frames: [{ key: 'mario', frame: 4 }],
+            frames: [{ key: 'mario', frame: 2 }],
             frameRate: 10
         });
     }

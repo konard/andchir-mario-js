@@ -32,7 +32,6 @@ export default class Level1Scene extends Phaser.Scene {
         this.createCoins();
         this.createEnemies();
         this.createPipes();
-        this.createGoal();
         this.createHouse();
 
         // Create player
@@ -136,12 +135,6 @@ export default class Level1Scene extends Phaser.Scene {
         });
     }
 
-    createGoal() {
-        this.goal = this.add.sprite(this.levelConfig.goal.x, this.levelConfig.goal.y, 'flag');
-        this.physics.add.existing(this.goal, true);
-        this.goal.body.setSize(32, 64);
-    }
-
     createHouse() {
         this.house = this.add.sprite(this.levelConfig.house.x, this.levelConfig.house.y, 'house');
         this.house.setOrigin(0, 0);
@@ -169,9 +162,6 @@ export default class Level1Scene extends Phaser.Scene {
         // Player collectibles
         this.physics.add.overlap(this.player, this.coinGroup, this.collectCoin, null, this);
         this.physics.add.overlap(this.player, this.powerUpGroup, this.collectPowerUp, null, this);
-
-        // Goal
-        this.physics.add.overlap(this.player, this.goal, this.reachGoal, null, this);
 
         // House (level transition)
         this.physics.add.overlap(this.player, this.house, this.enterHouse, null, this);
@@ -288,24 +278,6 @@ export default class Level1Scene extends Phaser.Scene {
         }
     }
 
-    reachGoal(player, goal) {
-        this.timerEvent.remove();
-
-        player.setVelocity(0, 0);
-        this.physics.world.disable(player);
-
-        // Victory animation
-        this.tweens.add({
-            targets: player,
-            y: goal.y + 100,
-            duration: 1000,
-            ease: 'Linear',
-            onComplete: () => {
-                this.levelComplete();
-            }
-        });
-    }
-
     enterHouse(player, house) {
         // Prevent multiple triggers
         if (this.isEnteringHouse) {
@@ -329,34 +301,6 @@ export default class Level1Scene extends Phaser.Scene {
             onComplete: () => {
                 this.transitionToLevel2();
             }
-        });
-    }
-
-    levelComplete() {
-        const bonus = this.timeLeft * 50;
-        this.player.addScore(bonus);
-
-        const width = this.cameras.main.width;
-        const height = this.cameras.main.height;
-
-        const victoryText = this.add.text(
-            this.cameras.main.scrollX + width / 2,
-            this.cameras.main.scrollY + height / 2,
-            'LEVEL COMPLETE!\n\nTime Bonus: ' + bonus + '\nTotal Score: ' + this.player.score,
-            {
-                fontSize: '32px',
-                fontFamily: 'Arial',
-                fill: '#ffffff',
-                align: 'center',
-                stroke: '#000000',
-                strokeThickness: 6
-            }
-        );
-        victoryText.setOrigin(0.5);
-
-        this.time.delayedCall(4000, () => {
-            this.scene.start('MenuScene');
-            this.scene.stop('UIScene');
         });
     }
 

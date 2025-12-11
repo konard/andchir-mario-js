@@ -1,17 +1,17 @@
 import Phaser from 'phaser';
 import Player from '../entities/Player.js';
 import Goomba from '../entities/Goomba.js';
-import Level1Config from '../config/Level1Config.js';
+import Level2Config from '../config/Level2Config.js';
 
-export default class Level1Scene extends Phaser.Scene {
+export default class Level2Scene extends Phaser.Scene {
     constructor() {
-        super({ key: 'Level1Scene' });
+        super({ key: 'Level2Scene' });
         // Debug flag for pit death detection - set to false in production
         this.debugPitDeath = false;
     }
 
     create() {
-        this.levelConfig = Level1Config;
+        this.levelConfig = Level2Config;
 
         // Set world bounds
         this.physics.world.setBounds(0, 0, this.levelConfig.width, this.levelConfig.height);
@@ -33,7 +33,6 @@ export default class Level1Scene extends Phaser.Scene {
         this.createEnemies();
         this.createPipes();
         this.createGoal();
-        this.createHouse();
 
         // Create player
         this.player = new Player(
@@ -41,6 +40,26 @@ export default class Level1Scene extends Phaser.Scene {
             this.levelConfig.playerStart.x,
             this.levelConfig.playerStart.y
         );
+
+        // Restore player state from previous level
+        const previousScore = this.registry.get('playerScore');
+        const previousLives = this.registry.get('playerLives');
+        const previousCoins = this.registry.get('playerCoins');
+        const previousIsPoweredUp = this.registry.get('playerIsPoweredUp');
+
+        if (previousScore !== undefined) {
+            this.player.score = previousScore;
+        }
+        if (previousLives !== undefined) {
+            this.player.lives = previousLives;
+        }
+        if (previousCoins !== undefined) {
+            this.player.coins = previousCoins;
+        }
+        if (previousIsPoweredUp !== undefined && previousIsPoweredUp) {
+            this.player.isPoweredUp = true;
+            this.player.setDisplaySize(32, 48);
+        }
 
         // Setup camera
         this.cameras.main.setBounds(0, 0, this.levelConfig.width, this.levelConfig.height);
@@ -142,13 +161,6 @@ export default class Level1Scene extends Phaser.Scene {
         this.goal.body.setSize(32, 64);
     }
 
-    createHouse() {
-        this.house = this.add.sprite(this.levelConfig.house.x, this.levelConfig.house.y, 'house');
-        this.house.setOrigin(0, 0);
-        this.physics.add.existing(this.house, true);
-        this.house.body.setSize(64, 96);
-    }
-
     setupCollisions() {
         // Player collisions with world
         this.physics.add.collider(this.player, this.groundGroup);
@@ -172,9 +184,6 @@ export default class Level1Scene extends Phaser.Scene {
 
         // Goal
         this.physics.add.overlap(this.player, this.goal, this.reachGoal, null, this);
-
-        // House (level transition)
-        this.physics.add.overlap(this.player, this.house, this.enterHouse, null, this);
     }
 
     hitBrick(player, brick) {
@@ -306,32 +315,6 @@ export default class Level1Scene extends Phaser.Scene {
         });
     }
 
-    enterHouse(player, house) {
-        // Prevent multiple triggers
-        if (this.isEnteringHouse) {
-            return;
-        }
-        this.isEnteringHouse = true;
-
-        this.timerEvent.remove();
-
-        // Stop player movement
-        player.setVelocity(0, 0);
-        this.physics.world.disable(player);
-
-        // Move player into house
-        this.tweens.add({
-            targets: player,
-            x: house.x + 32,
-            alpha: 0,
-            duration: 500,
-            ease: 'Linear',
-            onComplete: () => {
-                this.transitionToLevel2();
-            }
-        });
-    }
-
     levelComplete() {
         const bonus = this.timeLeft * 50;
         this.player.addScore(bonus);
@@ -342,7 +325,7 @@ export default class Level1Scene extends Phaser.Scene {
         const victoryText = this.add.text(
             this.cameras.main.scrollX + width / 2,
             this.cameras.main.scrollY + height / 2,
-            'LEVEL COMPLETE!\n\nTime Bonus: ' + bonus + '\nTotal Score: ' + this.player.score,
+            'GAME COMPLETE!\n\nTime Bonus: ' + bonus + '\nTotal Score: ' + this.player.score,
             {
                 fontSize: '32px',
                 fontFamily: 'Arial',
@@ -357,40 +340,6 @@ export default class Level1Scene extends Phaser.Scene {
         this.time.delayedCall(4000, () => {
             this.scene.start('MenuScene');
             this.scene.stop('UIScene');
-        });
-    }
-
-    transitionToLevel2() {
-        // Calculate time bonus
-        const bonus = this.timeLeft * 50;
-        this.player.addScore(bonus);
-
-        const width = this.cameras.main.width;
-        const height = this.cameras.main.height;
-
-        const transitionText = this.add.text(
-            this.cameras.main.scrollX + width / 2,
-            this.cameras.main.scrollY + height / 2,
-            'ENTERING LEVEL 2...\n\nTime Bonus: ' + bonus,
-            {
-                fontSize: '32px',
-                fontFamily: 'Arial',
-                fill: '#ffffff',
-                align: 'center',
-                stroke: '#000000',
-                strokeThickness: 6
-            }
-        );
-        transitionText.setOrigin(0.5);
-
-        // Store player data for next level
-        this.registry.set('playerScore', this.player.score);
-        this.registry.set('playerLives', this.player.lives);
-        this.registry.set('playerCoins', this.player.coins);
-        this.registry.set('playerIsPoweredUp', this.player.isPoweredUp);
-
-        this.time.delayedCall(2000, () => {
-            this.scene.start('Level2Scene');
         });
     }
 

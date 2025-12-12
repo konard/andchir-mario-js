@@ -378,8 +378,8 @@ export default class RandomLevelScene extends Phaser.Scene {
         if (this.player) {
             this.player.update();
 
-            // Check if player fell into a pit
-            if (this.player.y > this.levelConfig.height) {
+            // Check if player fell into a pit (but not during victory animation)
+            if (!this.isReachingGoal && this.player.y > this.levelConfig.height) {
                 if (this.debugPitDeath) {
                     console.log(`[PIT DEATH] Player fell into pit at y=${this.player.y} (threshold=${this.levelConfig.height})`);
                 }

@@ -4,6 +4,7 @@ import PreloadScene from './scenes/PreloadScene.js';
 import MenuScene from './scenes/MenuScene.js';
 import Level1Scene from './scenes/Level1Scene.js';
 import Level2Scene from './scenes/Level2Scene.js';
+import RandomLevelScene from './scenes/RandomLevelScene.js';
 import UIScene from './scenes/UIScene.js';
 
 const config = {
@@ -19,7 +20,7 @@ const config = {
             debug: false
         }
     },
-    scene: [BootScene, PreloadScene, MenuScene, Level1Scene, Level2Scene, UIScene],
+    scene: [BootScene, PreloadScene, MenuScene, Level1Scene, Level2Scene, RandomLevelScene, UIScene],
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH

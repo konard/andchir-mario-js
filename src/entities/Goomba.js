@@ -23,6 +23,9 @@ export default class Goomba extends Phaser.Physics.Arcade.Sprite {
 
         this.setVelocityX(this.speed * this.direction);
 
+        // Set initial sprite flip based on direction
+        this.setFlipX(this.direction === -1);
+
         this.isDead = false;
     }
 
@@ -36,11 +39,17 @@ export default class Goomba extends Phaser.Physics.Arcade.Sprite {
             this.direction *= -1;
             this.setVelocityX(this.speed * this.direction);
         }
+
+        // Update sprite flip based on direction
+        // direction -1 is left (should flip), direction 1 is right (should not flip)
+        this.setFlipX(this.direction === -1);
     }
 
     turnAround() {
         this.direction *= -1;
         this.setVelocityX(this.speed * this.direction);
+        // Update sprite flip when turning around
+        this.setFlipX(this.direction === -1);
     }
 
     stomped() {

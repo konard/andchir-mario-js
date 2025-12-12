@@ -43,6 +43,48 @@ export default class RandomLevelGenerator {
         return this.random() < probability;
     }
 
+    // Check if two rectangles overlap
+    rectanglesOverlap(x1, y1, w1, h1, x2, y2, w2, h2) {
+        return !(x1 + w1 <= x2 || x2 + w2 <= x1 || y1 + h1 <= y2 || y2 + h2 <= y1);
+    }
+
+    // Check if a position would overlap with existing objects
+    // Checks against floating platforms, bricks, questions, pipes
+    // excludeType is not used anymore - we check against all objects
+    isPositionClear(config, x, y, width = 32, height = 32) {
+        // Check floating platforms (not main ground at y=568)
+        for (const ground of config.grounds) {
+            if (ground.y !== this.GROUND_Y) {
+                if (this.rectanglesOverlap(x, y, width, height, ground.x, ground.y, ground.width, 32)) {
+                    return false;
+                }
+            }
+        }
+
+        // Check bricks
+        for (const brick of config.bricks) {
+            if (this.rectanglesOverlap(x, y, width, height, brick.x, brick.y, 32, 32)) {
+                return false;
+            }
+        }
+
+        // Check question blocks
+        for (const question of config.questions) {
+            if (this.rectanglesOverlap(x, y, width, height, question.x, question.y, 32, 32)) {
+                return false;
+            }
+        }
+
+        // Check pipes
+        for (const pipe of config.pipes) {
+            if (this.rectanglesOverlap(x, y, width, height, pipe.x, pipe.y, 64, pipe.height)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     generate() {
         const config = {
             name: `RANDOM ${Math.floor(this.seed * 10000)}`,
@@ -51,7 +93,7 @@ export default class RandomLevelGenerator {
             backgroundColor: '#5c94fc',
             playerStart: {
                 x: 100,
-                y: 400
+                y: this.GROUND_Y - 32  // Place player on ground (32 pixels above ground surface)
             },
             grounds: [],
             bricks: [],
@@ -136,18 +178,27 @@ export default class RandomLevelGenerator {
             // If gap is significant, add floating platforms
             if (gapSize > 96) {
                 const numPlatforms = this.randomInt(1, 3);
-                const platformY = this.randomInt(350, 450);
 
                 for (let j = 0; j < numPlatforms; j++) {
-                    const platformX = gapStart + (gapSize / (numPlatforms + 1)) * (j + 1) - 64;
-                    const platformWidth = this.randomInt(96, 160);
+                    let attempts = 0;
+                    let placed = false;
 
-                    config.grounds.push({
-                        x: Math.floor(platformX),
-                        y: platformY,
-                        width: platformWidth,
-                        height: 32
-                    });
+                    while (attempts < 5 && !placed) {
+                        const platformY = this.randomInt(350, 450);
+                        const platformX = gapStart + (gapSize / (numPlatforms + 1)) * (j + 1) - 64;
+                        const platformWidth = this.randomInt(96, 160);
+
+                        if (this.isPositionClear(config, Math.floor(platformX), platformY, platformWidth, 32)) {
+                            config.grounds.push({
+                                x: Math.floor(platformX),
+                                y: platformY,
+                                width: platformWidth,
+                                height: 32
+                            });
+                            placed = true;
+                        }
+                        attempts++;
+                    }
                 }
             }
         }
@@ -155,16 +206,25 @@ export default class RandomLevelGenerator {
         // Add some random floating platforms throughout the level
         const numExtraPlatforms = this.randomInt(3, 6);
         for (let i = 0; i < numExtraPlatforms; i++) {
-            const x = this.randomInt(300, this.LEVEL_WIDTH - 500);
-            const y = this.randomInt(300, 450);
-            const width = this.randomInt(96, 160);
+            let attempts = 0;
+            let placed = false;
 
-            config.grounds.push({
-                x: x,
-                y: y,
-                width: width,
-                height: 32
-            });
+            while (attempts < 10 && !placed) {
+                const x = this.randomInt(300, this.LEVEL_WIDTH - 500);
+                const y = this.randomInt(300, 450);
+                const width = this.randomInt(96, 160);
+
+                if (this.isPositionClear(config, x, y, width, 32)) {
+                    config.grounds.push({
+                        x: x,
+                        y: y,
+                        width: width,
+                        height: 32
+                    });
+                    placed = true;
+                }
+                attempts++;
+            }
         }
     }
 
@@ -173,31 +233,52 @@ export default class RandomLevelGenerator {
         const numFormations = this.randomInt(8, 15);
 
         for (let i = 0; i < numFormations; i++) {
-            const x = this.randomInt(200, this.LEVEL_WIDTH - 400);
-            const y = this.randomInt(300, 450);
+            let attempts = 0;
+            let placed = false;
 
-            // Random formation type
-            const formationType = this.randomInt(0, 2);
+            while (attempts < 10 && !placed) {
+                const x = this.randomInt(200, this.LEVEL_WIDTH - 400);
+                const y = this.randomInt(300, 450);
 
-            if (formationType === 0) {
-                // Horizontal line of bricks
-                const count = this.randomInt(2, 5);
-                for (let j = 0; j < count; j++) {
-                    config.bricks.push({ x: x + j * 32, y: y });
+                // Random formation type
+                const formationType = this.randomInt(0, 2);
+                const bricksToAdd = [];
+
+                if (formationType === 0) {
+                    // Horizontal line of bricks
+                    const count = this.randomInt(2, 5);
+                    for (let j = 0; j < count; j++) {
+                        bricksToAdd.push({ x: x + j * 32, y: y });
+                    }
+                } else if (formationType === 1) {
+                    // Pyramid of bricks
+                    for (let row = 0; row < 3; row++) {
+                        for (let col = 0; col <= row; col++) {
+                            bricksToAdd.push({
+                                x: x + col * 32,
+                                y: y - row * 32
+                            });
+                        }
+                    }
+                } else {
+                    // Single brick
+                    bricksToAdd.push({ x: x, y: y });
                 }
-            } else if (formationType === 1) {
-                // Pyramid of bricks
-                for (let row = 0; row < 3; row++) {
-                    for (let col = 0; col <= row; col++) {
-                        config.bricks.push({
-                            x: x + col * 32,
-                            y: y - row * 32
-                        });
+
+                // Check if all bricks in the formation can be placed
+                let allClear = true;
+                for (const brick of bricksToAdd) {
+                    if (!this.isPositionClear(config, brick.x, brick.y, 32, 32)) {
+                        allClear = false;
+                        break;
                     }
                 }
-            } else {
-                // Single brick
-                config.bricks.push({ x: x, y: y });
+
+                if (allClear) {
+                    config.bricks.push(...bricksToAdd);
+                    placed = true;
+                }
+                attempts++;
             }
         }
     }
@@ -207,13 +288,21 @@ export default class RandomLevelGenerator {
         const numBlocks = this.randomInt(6, 12);
 
         for (let i = 0; i < numBlocks; i++) {
-            const x = this.randomInt(200, this.LEVEL_WIDTH - 400);
-            const y = this.randomInt(300, 450);
+            let attempts = 0;
+            let placed = false;
 
-            // 30% chance of mushroom, 70% chance of coin
-            const contains = this.randomBool(0.3) ? 'mushroom' : 'coin';
+            while (attempts < 10 && !placed) {
+                const x = this.randomInt(200, this.LEVEL_WIDTH - 400);
+                const y = this.randomInt(300, 450);
 
-            config.questions.push({ x: x, y: y, contains: contains });
+                if (this.isPositionClear(config, x, y, 32, 32)) {
+                    // 30% chance of mushroom, 70% chance of coin
+                    const contains = this.randomBool(0.3) ? 'mushroom' : 'coin';
+                    config.questions.push({ x: x, y: y, contains: contains });
+                    placed = true;
+                }
+                attempts++;
+            }
         }
     }
 
@@ -222,29 +311,43 @@ export default class RandomLevelGenerator {
         const numFormations = this.randomInt(8, 15);
 
         for (let i = 0; i < numFormations; i++) {
-            const x = this.randomInt(200, this.LEVEL_WIDTH - 400);
-            const y = this.randomInt(250, 400);
+            let attempts = 0;
+            let placed = false;
 
-            // Random formation type
-            const formationType = this.randomInt(0, 2);
+            while (attempts < 10 && !placed) {
+                const x = this.randomInt(200, this.LEVEL_WIDTH - 400);
+                const y = this.randomInt(250, 400);
 
-            if (formationType === 0) {
-                // Horizontal line of coins
-                const count = this.randomInt(3, 6);
-                for (let j = 0; j < count; j++) {
-                    config.coins.push({ x: x + j * 32, y: y });
+                // Random formation type
+                const formationType = this.randomInt(0, 2);
+                const coinsToAdd = [];
+
+                if (formationType === 0) {
+                    // Horizontal line of coins
+                    const count = this.randomInt(3, 6);
+                    for (let j = 0; j < count; j++) {
+                        coinsToAdd.push({ x: x + j * 32, y: y });
+                    }
+                } else if (formationType === 1) {
+                    // Arc of coins
+                    const count = this.randomInt(4, 7);
+                    for (let j = 0; j < count; j++) {
+                        const arcX = x + j * 24;
+                        const arcY = y - Math.abs((count / 2 - j)) * 16;
+                        coinsToAdd.push({ x: arcX, y: arcY });
+                    }
+                } else {
+                    // Single coin
+                    coinsToAdd.push({ x: x, y: y });
                 }
-            } else if (formationType === 1) {
-                // Arc of coins
-                const count = this.randomInt(4, 7);
-                for (let j = 0; j < count; j++) {
-                    const arcX = x + j * 24;
-                    const arcY = y - Math.abs((count / 2 - j)) * 16;
-                    config.coins.push({ x: arcX, y: arcY });
+
+                // Check if the first coin in the formation can be placed (simpler check for coins)
+                // We only check the starting position to allow more freedom for coins
+                if (this.isPositionClear(config, x, y, 32, 32)) {
+                    config.coins.push(...coinsToAdd);
+                    placed = true;
                 }
-            } else {
-                // Single coin
-                config.coins.push({ x: x, y: y });
+                attempts++;
             }
         }
     }
@@ -273,15 +376,24 @@ export default class RandomLevelGenerator {
         const numPipes = this.randomInt(3, 6);
 
         for (let i = 0; i < numPipes; i++) {
-            // Find a ground platform to place the pipe on
-            const groundIndex = this.randomInt(0, Math.min(3, config.grounds.length - 1));
-            const ground = config.grounds[groundIndex];
+            let attempts = 0;
+            let placed = false;
 
-            if (ground.width > 200) {
-                const x = ground.x + this.randomInt(100, ground.width - 100);
-                const height = this.randomBool(0.5) ? 64 : 96;
+            while (attempts < 10 && !placed) {
+                // Find a ground platform to place the pipe on
+                const groundIndex = this.randomInt(0, Math.min(3, config.grounds.length - 1));
+                const ground = config.grounds[groundIndex];
 
-                config.pipes.push({ x: x, y: ground.y - height, height: height });
+                if (ground.width > 200) {
+                    const x = ground.x + this.randomInt(100, ground.width - 100);
+                    const height = this.randomBool(0.5) ? 64 : 96;
+
+                    if (this.isPositionClear(config, x, ground.y - height, 64, height)) {
+                        config.pipes.push({ x: x, y: ground.y - height, height: height });
+                        placed = true;
+                    }
+                }
+                attempts++;
             }
         }
     }

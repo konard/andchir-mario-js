@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import marioSpriteUrl from '../media/sprite_mario.png';
+import goombaSpriteUrl from '../media/sprite_goomba.png';
 
 export default class PreloadScene extends Phaser.Scene {
     constructor() {
@@ -9,6 +10,12 @@ export default class PreloadScene extends Phaser.Scene {
     preload() {
         // Load Mario sprite sheet with doubled resolution (64x80 frames)
         this.load.spritesheet('mario', marioSpriteUrl, {
+            frameWidth: 64,
+            frameHeight: 80
+        });
+
+        // Load Goomba sprite sheet (64x80 frames, will be scaled to 0.5)
+        this.load.spritesheet('goomba', goombaSpriteUrl, {
             frameWidth: 64,
             frameHeight: 80
         });
@@ -30,8 +37,8 @@ export default class PreloadScene extends Phaser.Scene {
         // Coin
         this.createCoin();
 
-        // Goomba enemy
-        this.createGoomba();
+        // Goomba enemy - now loaded from sprite sheet instead of Graphics API
+        // this.createGoomba();
 
         // Mushroom power-up
         this.createMushroom();
@@ -174,6 +181,9 @@ export default class PreloadScene extends Phaser.Scene {
         // Create Mario animations
         this.createMarioAnimations();
 
+        // Create Goomba animations
+        this.createGoombaAnimations();
+
         this.scene.start('MenuScene');
     }
 
@@ -208,6 +218,16 @@ export default class PreloadScene extends Phaser.Scene {
             key: 'mario-skid',
             frames: [{ key: 'mario', frame: 2 }],
             frameRate: 10
+        });
+    }
+
+    createGoombaAnimations() {
+        // Goomba walk animation (assuming frames 0 and 1 for walk cycle)
+        this.anims.create({
+            key: 'goomba-walk',
+            frames: this.anims.generateFrameNumbers('goomba', { start: 0, end: 1 }),
+            frameRate: 8,
+            repeat: -1
         });
     }
 }

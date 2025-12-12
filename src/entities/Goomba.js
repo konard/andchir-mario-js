@@ -7,9 +7,15 @@ export default class Goomba extends Phaser.Physics.Arcade.Sprite {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
+        // Scale down the sprite by 2x (from 64x80 to 32x40)
+        this.setScale(0.5);
+
         this.setCollideWorldBounds(true);
         this.setBounce(0);
         this.setGravityY(0);
+
+        // Play walk animation
+        this.play('goomba-walk');
 
         // Movement properties
         this.speed = 50;

@@ -219,7 +219,7 @@ export default class Level2Scene extends Phaser.Scene {
     hitQuestion(player, block) {
         if (player.body.touching.up && block.body.touching.down && !block.isUsed) {
             block.isUsed = true;
-            block.setTexture('brick');
+            block.setTexture('ground');
 
             this.bumpBlock(block);
 

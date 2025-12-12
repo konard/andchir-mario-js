@@ -10,6 +10,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         // Player properties
         // Don't collide with world bounds - we need to detect falling into pits
         // The pit death detection in Level1Scene checks if player.y > levelHeight
+        this.setScale(0.5);
         this.setCollideWorldBounds(false);
         this.setBounce(0);
         this.setGravityY(0);

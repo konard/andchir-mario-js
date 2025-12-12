@@ -312,15 +312,22 @@ export default class Level2Scene extends Phaser.Scene {
     }
 
     reachGoal(player, goal) {
+        // Prevent multiple triggers and disable pit death check during victory
+        if (this.isReachingGoal) {
+            return;
+        }
+        this.isReachingGoal = true;
+
         this.timerEvent.remove();
 
         player.setVelocity(0, 0);
         this.physics.world.disable(player);
 
-        // Victory animation
+        // Victory animation - slide down the flagpole to ground level
+        // Move player to goal.y - 32 to position at base of pole without exceeding level bounds
         this.tweens.add({
             targets: player,
-            y: goal.y + 100,
+            y: goal.y - 32,
             duration: 1000,
             ease: 'Linear',
             onComplete: () => {
@@ -386,8 +393,8 @@ export default class Level2Scene extends Phaser.Scene {
         if (this.player) {
             this.player.update();
 
-            // Check if player fell into a pit
-            if (this.player.y > this.levelConfig.height) {
+            // Check if player fell into a pit (but not during victory animation)
+            if (!this.isReachingGoal && this.player.y > this.levelConfig.height) {
                 if (this.debugPitDeath) {
                     console.log(`[PIT DEATH] Player fell into pit at y=${this.player.y} (threshold=${this.levelConfig.height})`);
                 }

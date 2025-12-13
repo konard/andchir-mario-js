@@ -18,7 +18,7 @@ export default {
         // Main ground
         { x: 0, y: 568, width: 3200, height: 32 },
         // Large gap for moving platforms (from 3200 to 3600 = 400 pixels)
-        { x: 3600, y: 568, width: 1400, height: 32 },
+        { x: 3400, y: 568, width: 1400, height: 32 },
         // Floating platform
         { x: 800, y: 400, width: 192, height: 32 },
         { x: 1200, y: 350, width: 128, height: 32 },

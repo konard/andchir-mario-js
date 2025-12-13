@@ -109,6 +109,6 @@ export default {
     // House (level transition to Level 2)
     house: {
         x: 6200,
-        y: 472
+        y: 462
     }
 };

@@ -7,13 +7,15 @@ export default class RandomLevelScene extends Phaser.Scene {
     constructor() {
         super({ key: 'RandomLevelScene' });
         this.debugPitDeath = false;
-        this.currentLevelNumber = 1;
     }
 
     create() {
         // Generate random level
         const generator = new RandomLevelGenerator();
         this.levelConfig = generator.generate();
+
+        // Get or initialize current level number from registry
+        this.currentLevelNumber = this.registry.get('currentLevelNumber') || 1;
 
         // Set level name in registry for UI
         this.registry.set('levelName', `RANDOM ${this.currentLevelNumber}`);
@@ -352,8 +354,9 @@ export default class RandomLevelScene extends Phaser.Scene {
         this.registry.set('playerCoins', this.player.coins);
         this.registry.set('playerIsPoweredUp', this.player.isPoweredUp);
 
-        // Increment level number
+        // Increment and store level number for next level
         this.currentLevelNumber++;
+        this.registry.set('currentLevelNumber', this.currentLevelNumber);
 
         this.time.delayedCall(2000, () => {
             // Restart the scene to generate a new random level

@@ -10,16 +10,16 @@ export default class MenuScene extends Phaser.Scene {
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
 
-        // Title
-        const title = this.add.text(width / 2, height / 2 - 150, 'SUPER MARIO', {
-            fontSize: '48px',
-            fontFamily: 'Arial',
-            fontStyle: 'bold',
-            fill: '#ffffff',
-            stroke: '#000000',
-            strokeThickness: 6
-        });
-        title.setOrigin(0.5);
+        // Add background image
+        const background = this.add.image(width / 2, height / 2, 'menuBackground');
+        // Scale to cover the entire screen while maintaining aspect ratio
+        const scaleX = width / background.width;
+        const scaleY = height / background.height;
+        const scale = Math.max(scaleX, scaleY);
+        background.setScale(scale);
+
+        // Add semi-transparent background for menu area
+        const menuBg = this.add.rectangle(width / 2, height / 2 + 50, 500, 300, 0x000000, 0.7);
 
         // Menu title
         const menuTitle = this.add.text(width / 2, height / 2 - 50, 'SELECT GAME MODE', {
@@ -58,7 +58,7 @@ export default class MenuScene extends Phaser.Scene {
             'UP/DOWN: Select Mode\nSPACE: Start Game\n\nArrow Keys: Move\nSpace: Jump', {
             fontSize: '16px',
             fontFamily: 'Arial',
-            fill: '#aaaaaa',
+            fill: '#ffffff',
             align: 'center',
             stroke: '#000000',
             strokeThickness: 3

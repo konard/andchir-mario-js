@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import marioSpriteUrl from '../media/sprite_mario.png';
 import goombaSpriteUrl from '../media/sprite_goomba.png';
+import marioGameBgUrl from '../media/mario_game.jpg';
 
 export default class PreloadScene extends Phaser.Scene {
     constructor() {
@@ -19,6 +20,9 @@ export default class PreloadScene extends Phaser.Scene {
             frameWidth: 64,
             frameHeight: 80
         });
+
+        // Load menu background image
+        this.load.image('menuBackground', marioGameBgUrl);
 
         // Create other assets using Graphics API
         this.createAssets();

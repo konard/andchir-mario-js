@@ -62,7 +62,7 @@ export default class RandomLevelScene extends Phaser.Scene {
         this.player.coins = playerCoins;
         if (playerIsPoweredUp) {
             this.player.isPoweredUp = true;
-            this.player.setSize(32, 64);
+            this.player.setScale(1);
         }
 
         // Setup camera

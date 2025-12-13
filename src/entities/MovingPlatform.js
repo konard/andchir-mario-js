@@ -15,7 +15,7 @@ export default class MovingPlatform extends Phaser.Physics.Arcade.Sprite {
         // Make sure the sprite is visible
         this.setVisible(true);
         this.setAlpha(1);
-        this.setDepth(1);
+        this.setDepth(10);
 
         // Movement properties
         this.speed = 50; // pixels per second

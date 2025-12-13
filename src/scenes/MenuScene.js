@@ -112,7 +112,8 @@ export default class MenuScene extends Phaser.Scene {
             this.scene.start('Level1Scene');
             this.scene.launch('UIScene');
         } else {
-            // Random levels mode
+            // Random levels mode - reset level number for new session
+            this.registry.set('currentLevelNumber', 1);
             this.scene.start('RandomLevelScene');
             this.scene.launch('UIScene');
         }

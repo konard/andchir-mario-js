@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Player from '../entities/Player.js';
 import Goomba from '../entities/Goomba.js';
+import MovingPlatform from '../entities/MovingPlatform.js';
 import Level1Config from '../config/Level1Config.js';
 
 export default class Level1Scene extends Phaser.Scene {
@@ -27,6 +28,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.enemyGroup = this.physics.add.group();
         this.pipeGroup = this.physics.add.staticGroup();
         this.powerUpGroup = this.physics.add.group();
+        this.movingPlatformGroup = this.physics.add.group();
 
         // Build level
         this.createGround();
@@ -35,6 +37,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.createCoins();
         this.createEnemies();
         this.createPipes();
+        this.createMovingPlatforms();
         this.createHouse();
 
         // Create player
@@ -145,12 +148,27 @@ export default class Level1Scene extends Phaser.Scene {
         this.house.body.setSize(64, 96);
     }
 
+    createMovingPlatforms() {
+        if (this.levelConfig.movingPlatforms) {
+            this.levelConfig.movingPlatforms.forEach(platform => {
+                const movingPlatform = new MovingPlatform(
+                    this,
+                    platform.x,
+                    platform.y,
+                    platform.width
+                );
+                this.movingPlatformGroup.add(movingPlatform);
+            });
+        }
+    }
+
     setupCollisions() {
         // Player collisions with world
         this.physics.add.collider(this.player, this.groundGroup);
         this.physics.add.collider(this.player, this.brickGroup, this.hitBrick, null, this);
         this.physics.add.collider(this.player, this.questionGroup, this.hitQuestion, null, this);
         this.physics.add.collider(this.player, this.pipeGroup);
+        this.physics.add.collider(this.player, this.movingPlatformGroup);
 
         // Enemy collisions
         this.physics.add.collider(this.enemyGroup, this.groundGroup);
@@ -387,6 +405,13 @@ export default class Level1Scene extends Phaser.Scene {
         this.enemyGroup.getChildren().forEach(enemy => {
             if (enemy.update) {
                 enemy.update();
+            }
+        });
+
+        // Update moving platforms
+        this.movingPlatformGroup.getChildren().forEach(platform => {
+            if (platform.update) {
+                platform.update();
             }
         });
     }

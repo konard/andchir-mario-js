@@ -34,23 +34,46 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         // Input
         this.cursors = scene.input.keyboard.createCursorKeys();
         this.spaceKey = scene.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
+
+        // Moving platform support
+        this.currentPlatform = null;
     }
 
     update() {
+        this.clearPlatformIfNotTouching();
         this.handleMovement();
         this.handleJump();
         this.updateAnimation();
     }
 
     handleMovement() {
+        // Get the platform velocity if player is standing on a moving platform
+        let platformVelocityX = 0;
+        if (this.currentPlatform && this.body.touching.down) {
+            platformVelocityX = this.currentPlatform.body.velocity.x;
+        }
+
         if (this.cursors.left.isDown) {
-            this.setVelocityX(-this.speed);
+            this.setVelocityX(-this.speed + platformVelocityX);
             this.facingRight = false;
         } else if (this.cursors.right.isDown) {
-            this.setVelocityX(this.speed);
+            this.setVelocityX(this.speed + platformVelocityX);
             this.facingRight = true;
         } else {
-            this.setVelocityX(0);
+            // When not pressing movement keys, inherit platform velocity
+            this.setVelocityX(platformVelocityX);
+        }
+    }
+
+    // Called from the scene's collision callback
+    setCurrentPlatform(platform) {
+        this.currentPlatform = platform;
+    }
+
+    // Called each frame to clear platform reference if not touching
+    clearPlatformIfNotTouching() {
+        if (!this.body.touching.down) {
+            this.currentPlatform = null;
         }
     }
 

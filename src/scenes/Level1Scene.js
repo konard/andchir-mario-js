@@ -173,7 +173,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.brickGroup, this.hitBrick, null, this);
         this.physics.add.collider(this.player, this.questionGroup, this.hitQuestion, null, this);
         this.physics.add.collider(this.player, this.pipeGroup);
-        this.physics.add.collider(this.player, this.movingPlatformGroup);
+        this.physics.add.collider(this.player, this.movingPlatformGroup, this.playerOnPlatform, null, this);
 
         // Enemy collisions
         this.physics.add.collider(this.enemyGroup, this.groundGroup);
@@ -191,6 +191,13 @@ export default class Level1Scene extends Phaser.Scene {
 
         // House (level transition)
         this.physics.add.overlap(this.player, this.house, this.enterHouse, null, this);
+    }
+
+    playerOnPlatform(player, platform) {
+        // Only set platform reference when player is standing on top of it
+        if (player.body.touching.down && platform.body.touching.up) {
+            player.setCurrentPlatform(platform);
+        }
     }
 
     hitBrick(player, brick) {

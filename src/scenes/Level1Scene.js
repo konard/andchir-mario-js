@@ -28,7 +28,10 @@ export default class Level1Scene extends Phaser.Scene {
         this.enemyGroup = this.physics.add.group();
         this.pipeGroup = this.physics.add.staticGroup();
         this.powerUpGroup = this.physics.add.group();
-        this.movingPlatformGroup = this.physics.add.group();
+        this.movingPlatformGroup = this.physics.add.group({
+            allowGravity: false,
+            immovable: true
+        });
 
         // Build level
         this.createGround();
@@ -66,8 +69,6 @@ export default class Level1Scene extends Phaser.Scene {
         // Store reference for UI
         this.registry.set('player', this.player);
         this.registry.set('timeLeft', this.timeLeft);
-
-        this.physics.world.createDebugGraphic(); // Debug only (comment this line after debugging)
     }
 
     createGround() {
@@ -160,6 +161,8 @@ export default class Level1Scene extends Phaser.Scene {
                     platform.width
                 );
                 this.movingPlatformGroup.add(movingPlatform);
+                // Re-apply velocity after adding to group (group.add resets body properties)
+                movingPlatform.setVelocityX(movingPlatform.speed * movingPlatform.direction);
             });
         }
     }

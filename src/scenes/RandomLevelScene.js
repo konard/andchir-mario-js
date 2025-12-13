@@ -62,7 +62,12 @@ export default class RandomLevelScene extends Phaser.Scene {
         this.player.coins = playerCoins;
         if (playerIsPoweredUp) {
             this.player.isPoweredUp = true;
+            // Adjust Y position before scaling to prevent sinking into ground
+            // When scaling from 0.5 to 1, the sprite height doubles, so we need to move up
+            const currentY = this.player.y;
             this.player.setScale(1);
+            // Move up by half the height difference to keep feet at same level
+            this.player.y = currentY - (this.player.displayHeight * 0.25);
         }
 
         // Setup camera

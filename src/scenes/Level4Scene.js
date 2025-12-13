@@ -1,17 +1,18 @@
 import Phaser from 'phaser';
 import Player from '../entities/Player.js';
 import Goomba from '../entities/Goomba.js';
-import Level3Config from '../config/Level3Config.js';
+import MovingPlatform from '../entities/MovingPlatform.js';
+import Level4Config from '../config/Level4Config.js';
 
-export default class Level3Scene extends Phaser.Scene {
+export default class Level4Scene extends Phaser.Scene {
     constructor() {
-        super({ key: 'Level3Scene' });
+        super({ key: 'Level4Scene' });
         // Debug flag for pit death detection - set to false in production
         this.debugPitDeath = false;
     }
 
     create() {
-        this.levelConfig = Level3Config;
+        this.levelConfig = Level4Config;
 
         // Set level name in registry for UI
         this.registry.set('levelName', this.levelConfig.name);
@@ -27,6 +28,10 @@ export default class Level3Scene extends Phaser.Scene {
         this.enemyGroup = this.physics.add.group();
         this.pipeGroup = this.physics.add.staticGroup();
         this.powerUpGroup = this.physics.add.group();
+        this.movingPlatformGroup = this.physics.add.group({
+            allowGravity: false,
+            immovable: true
+        });
 
         // Build level
         this.createGround();
@@ -35,6 +40,7 @@ export default class Level3Scene extends Phaser.Scene {
         this.createCoins();
         this.createEnemies();
         this.createPipes();
+        this.createMovingPlatforms();
         this.createStaircase();
         this.createHouse();
 
@@ -78,7 +84,7 @@ export default class Level3Scene extends Phaser.Scene {
         this.setupCollisions();
 
         // Timer
-        this.timeLeft = 300;
+        this.timeLeft = 400; // More time due to challenging platforming
         this.timerEvent = this.time.addEvent({
             delay: 1000,
             callback: this.updateTimer,
@@ -164,6 +170,23 @@ export default class Level3Scene extends Phaser.Scene {
         });
     }
 
+    createMovingPlatforms() {
+        if (this.levelConfig.movingPlatforms) {
+            this.levelConfig.movingPlatforms.forEach(platform => {
+                const movingPlatform = new MovingPlatform(
+                    this,
+                    platform.x,
+                    platform.y,
+                    platform.width,
+                    platform.speed
+                );
+                this.movingPlatformGroup.add(movingPlatform);
+                // Re-apply velocity after adding to group (group.add resets body properties)
+                movingPlatform.setVelocityX(movingPlatform.speed * movingPlatform.direction);
+            });
+        }
+    }
+
     createStaircase() {
         this.levelConfig.staircase.forEach(block => {
             const tile = this.brickGroup.create(block.x, block.y, 'brick');
@@ -186,6 +209,7 @@ export default class Level3Scene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.brickGroup, this.hitBrick, null, this);
         this.physics.add.collider(this.player, this.questionGroup, this.hitQuestion, null, this);
         this.physics.add.collider(this.player, this.pipeGroup);
+        this.physics.add.collider(this.player, this.movingPlatformGroup, this.playerOnPlatform, null, this);
 
         // Enemy collisions
         this.physics.add.collider(this.enemyGroup, this.groundGroup);
@@ -203,6 +227,13 @@ export default class Level3Scene extends Phaser.Scene {
 
         // House (game completion)
         this.physics.add.overlap(this.player, this.house, this.enterHouse, null, this);
+    }
+
+    playerOnPlatform(player, platform) {
+        // Only set platform reference when player is standing on top of it
+        if (player.body.touching.down && platform.body.touching.up) {
+            player.setCurrentPlatform(platform);
+        }
     }
 
     hitBrick(player, brick) {
@@ -337,12 +368,12 @@ export default class Level3Scene extends Phaser.Scene {
             duration: 500,
             ease: 'Linear',
             onComplete: () => {
-                this.transitionToLevel4();
+                this.gameComplete();
             }
         });
     }
 
-    transitionToLevel4() {
+    gameComplete() {
         // Calculate time bonus
         const bonus = this.timeLeft * 50;
         this.player.addScore(bonus);
@@ -350,10 +381,10 @@ export default class Level3Scene extends Phaser.Scene {
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
 
-        const transitionText = this.add.text(
+        const victoryText = this.add.text(
             this.cameras.main.scrollX + width / 2,
             this.cameras.main.scrollY + height / 2,
-            'ENTERING LEVEL 4...\n\nTime Bonus: ' + bonus,
+            'GAME COMPLETE!\n\nTime Bonus: ' + bonus + '\nTotal Score: ' + this.player.score,
             {
                 fontSize: '32px',
                 fontFamily: 'Arial',
@@ -363,16 +394,11 @@ export default class Level3Scene extends Phaser.Scene {
                 strokeThickness: 6
             }
         );
-        transitionText.setOrigin(0.5);
+        victoryText.setOrigin(0.5);
 
-        // Store player data for next level
-        this.registry.set('playerScore', this.player.score);
-        this.registry.set('playerLives', this.player.lives);
-        this.registry.set('playerCoins', this.player.coins);
-        this.registry.set('playerIsPoweredUp', this.player.isPoweredUp);
-
-        this.time.delayedCall(2000, () => {
-            this.scene.start('Level4Scene');
+        this.time.delayedCall(4000, () => {
+            this.scene.start('MenuScene');
+            this.scene.stop('UIScene');
         });
     }
 
@@ -422,6 +448,13 @@ export default class Level3Scene extends Phaser.Scene {
         this.enemyGroup.getChildren().forEach(enemy => {
             if (enemy.update) {
                 enemy.update();
+            }
+        });
+
+        // Update moving platforms
+        this.movingPlatformGroup.getChildren().forEach(platform => {
+            if (platform.update) {
+                platform.update();
             }
         });
     }

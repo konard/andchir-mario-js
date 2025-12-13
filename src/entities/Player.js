@@ -99,12 +99,15 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
         // Flip sprite based on direction
         this.setFlipX(!this.facingRight);
 
+        // Check if player is actively moving (pressing movement keys)
+        const isMoving = this.cursors.left.isDown || this.cursors.right.isDown;
+
         // Play appropriate animation based on state
         if (!this.body.touching.down) {
             // In air - jump animation
             this.anims.play('mario-jump', true);
-        } else if (this.body.velocity.x !== 0) {
-            // Moving - walk animation
+        } else if (isMoving) {
+            // Moving - walk animation (only when actively pressing movement keys)
             this.anims.play('mario-walk', true);
         } else {
             // Standing still - idle animation

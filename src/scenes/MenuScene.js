@@ -17,7 +17,7 @@ export default class MenuScene extends Phaser.Scene {
         background.setScale(scaleY);
 
         // Add semi-transparent background for menu area
-        const menuBg = this.add.rectangle(width / 2, height / 2 + 100, 500, 300, 0x000000, 0.7);
+        const menuBg = this.add.rectangle(width / 2, height / 2 + 100, 300, 300, 0x000000, 0.5);
 
         // Menu title
         const menuTitle = this.add.text(width / 2, height / 2, 'SELECT GAME MODE', {

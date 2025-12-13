@@ -10,6 +10,9 @@ export default class RandomLevelScene extends Phaser.Scene {
     }
 
     create() {
+        // Reset state flags (important for scene.restart() to work correctly)
+        this.isEnteringHouse = false;
+
         // Generate random level
         const generator = new RandomLevelGenerator();
         this.levelConfig = generator.generate();

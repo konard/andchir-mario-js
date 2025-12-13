@@ -51,6 +51,9 @@ export default class PreloadScene extends Phaser.Scene {
 
         // House (for level transition)
         this.createHouse();
+
+        // Moving platform
+        this.createMovingPlatform();
     }
 
     createGroundTile() {
@@ -174,6 +177,25 @@ export default class PreloadScene extends Phaser.Scene {
         graphics.fillRect(42, 42, 12, 12);
 
         graphics.generateTexture('house', 64, 96);
+        graphics.destroy();
+    }
+
+    createMovingPlatform() {
+        const graphics = this.make.graphics({ x: 0, y: 0, add: false });
+
+        // Gray platform with darker outline
+        graphics.fillStyle(0x808080); // Gray color
+        graphics.fillRect(0, 0, 96, 16);
+
+        // Darker gray border for depth
+        graphics.fillStyle(0x606060);
+        graphics.fillRect(2, 2, 92, 12);
+
+        // Lighter gray highlight on top
+        graphics.fillStyle(0x909090);
+        graphics.fillRect(4, 4, 88, 4);
+
+        graphics.generateTexture('movingPlatform', 96, 16);
         graphics.destroy();
     }
 

@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import Player from '../entities/Player.js';
 import Goomba from '../entities/Goomba.js';
+import MovingPlatform from '../entities/MovingPlatform.js';
 import RandomLevelGenerator from '../utils/RandomLevelGenerator.js';
 
 export default class RandomLevelScene extends Phaser.Scene {
@@ -34,6 +35,10 @@ export default class RandomLevelScene extends Phaser.Scene {
         this.enemyGroup = this.physics.add.group();
         this.pipeGroup = this.physics.add.staticGroup();
         this.powerUpGroup = this.physics.add.group();
+        this.movingPlatformGroup = this.physics.add.group({
+            allowGravity: false,
+            immovable: true
+        });
 
         // Build level
         this.createGround();
@@ -42,6 +47,7 @@ export default class RandomLevelScene extends Phaser.Scene {
         this.createCoins();
         this.createEnemies();
         this.createPipes();
+        this.createMovingPlatforms();
         this.createHouse();
 
         // Create player (restore state if continuing from previous random level)
@@ -159,6 +165,23 @@ export default class RandomLevelScene extends Phaser.Scene {
         });
     }
 
+    createMovingPlatforms() {
+        if (this.levelConfig.movingPlatforms) {
+            this.levelConfig.movingPlatforms.forEach(platform => {
+                const movingPlatform = new MovingPlatform(
+                    this,
+                    platform.x,
+                    platform.y,
+                    platform.width,
+                    platform.speed
+                );
+                this.movingPlatformGroup.add(movingPlatform);
+                // Re-apply velocity after adding to group (group.add resets body properties)
+                movingPlatform.setVelocityX(movingPlatform.speed * movingPlatform.direction);
+            });
+        }
+    }
+
     createHouse() {
         this.house = this.add.sprite(this.levelConfig.house.x, this.levelConfig.house.y, 'house');
         this.house.setOrigin(0, 0);
@@ -172,6 +195,7 @@ export default class RandomLevelScene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.brickGroup, this.hitBrick, null, this);
         this.physics.add.collider(this.player, this.questionGroup, this.hitQuestion, null, this);
         this.physics.add.collider(this.player, this.pipeGroup);
+        this.physics.add.collider(this.player, this.movingPlatformGroup, this.playerOnPlatform, null, this);
 
         // Enemy collisions
         this.physics.add.collider(this.enemyGroup, this.groundGroup);
@@ -189,6 +213,13 @@ export default class RandomLevelScene extends Phaser.Scene {
 
         // House (level transition)
         this.physics.add.overlap(this.player, this.house, this.enterHouse, null, this);
+    }
+
+    playerOnPlatform(player, platform) {
+        // Only set platform reference when player is standing on top of it
+        if (player.body.touching.down && platform.body.touching.up) {
+            player.setCurrentPlatform(platform);
+        }
     }
 
     hitBrick(player, brick) {
@@ -413,6 +444,13 @@ export default class RandomLevelScene extends Phaser.Scene {
         this.enemyGroup.getChildren().forEach(enemy => {
             if (enemy.update) {
                 enemy.update();
+            }
+        });
+
+        // Update moving platforms
+        this.movingPlatformGroup.getChildren().forEach(platform => {
+            if (platform.update) {
+                platform.update();
             }
         });
     }

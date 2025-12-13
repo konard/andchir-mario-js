@@ -116,6 +116,7 @@ export default class RandomLevelGenerator {
             coins: [],
             enemies: [],
             pipes: [],
+            movingPlatforms: [],
             house: {
                 x: this.LEVEL_WIDTH - 200,
                 y: 462  // Position on ground like in Level 1 and Level 2
@@ -142,6 +143,9 @@ export default class RandomLevelGenerator {
 
         // Generate pipes
         this.generatePipes(config);
+
+        // Generate moving platforms
+        this.generateMovingPlatforms(config);
 
         return config;
     }
@@ -424,6 +428,76 @@ export default class RandomLevelGenerator {
                         config.pipes.push({ x: x, y: ground.y - height, height: height });
                         placed = true;
                     }
+                }
+                attempts++;
+            }
+        }
+    }
+
+    generateMovingPlatforms(config) {
+        // Find gaps between ground platforms and add moving platforms
+        const groundPlatformsAtGroundLevel = config.grounds.filter(g => g.y === this.GROUND_Y);
+
+        // Sort by x position to find gaps
+        groundPlatformsAtGroundLevel.sort((a, b) => a.x - b.x);
+
+        for (let i = 0; i < groundPlatformsAtGroundLevel.length - 1; i++) {
+            const ground1 = groundPlatformsAtGroundLevel[i];
+            const ground2 = groundPlatformsAtGroundLevel[i + 1];
+            const gapStart = ground1.x + ground1.width;
+            const gapEnd = ground2.x;
+            const gapSize = gapEnd - gapStart;
+
+            // Add moving platforms in significant gaps (larger than 100 pixels)
+            // Only add them sometimes (50% chance per gap)
+            if (gapSize > 100 && this.randomBool(0.5)) {
+                // Determine how many moving platforms to add based on gap size
+                const numPlatforms = gapSize > 150 ? this.randomInt(1, 2) : 1;
+
+                for (let j = 0; j < numPlatforms; j++) {
+                    // Platform width between 64 and 96 pixels
+                    const platformWidth = this.randomInt(64, 96);
+                    // Speed between 40 and 70 pixels per second
+                    const platformSpeed = this.randomInt(40, 70);
+                    // Y position slightly above the gap (between 480 and 520)
+                    const platformY = this.randomInt(480, 520);
+                    // X position distributed across the gap
+                    const platformX = gapStart + (gapSize / (numPlatforms + 1)) * (j + 1) - platformWidth / 2;
+
+                    config.movingPlatforms.push({
+                        x: Math.floor(platformX),
+                        y: platformY,
+                        width: platformWidth,
+                        speed: platformSpeed
+                    });
+                }
+            }
+        }
+
+        // Also add some random moving platforms above ground level for variety
+        const numExtraMovingPlatforms = this.randomInt(1, 3);
+
+        for (let i = 0; i < numExtraMovingPlatforms; i++) {
+            let attempts = 0;
+            let placed = false;
+
+            while (attempts < 10 && !placed) {
+                // Position in the middle portion of the level (not too close to start or end)
+                const x = this.randomInt(500, this.LEVEL_WIDTH - 700);
+                // Higher up (between 350 and 450)
+                const y = this.randomInt(350, 450);
+                const width = this.randomInt(64, 96);
+                const speed = this.randomInt(40, 70);
+
+                // Check if position is clear (with some buffer)
+                if (this.isPositionClear(config, x, y, width + 100, 32)) {
+                    config.movingPlatforms.push({
+                        x: x,
+                        y: y,
+                        width: width,
+                        speed: speed
+                    });
+                    placed = true;
                 }
                 attempts++;
             }

@@ -1,17 +1,17 @@
 import Phaser from 'phaser';
 import Player from '../entities/Player.js';
 import Goomba from '../entities/Goomba.js';
-import Level2Config from '../config/Level2Config.js';
+import Level3Config from '../config/Level3Config.js';
 
-export default class Level2Scene extends Phaser.Scene {
+export default class Level3Scene extends Phaser.Scene {
     constructor() {
-        super({ key: 'Level2Scene' });
+        super({ key: 'Level3Scene' });
         // Debug flag for pit death detection - set to false in production
         this.debugPitDeath = false;
     }
 
     create() {
-        this.levelConfig = Level2Config;
+        this.levelConfig = Level3Config;
 
         // Set level name in registry for UI
         this.registry.set('levelName', this.levelConfig.name);
@@ -36,7 +36,7 @@ export default class Level2Scene extends Phaser.Scene {
         this.createEnemies();
         this.createPipes();
         this.createStaircase();
-        this.createHouse();
+        this.createGoal();
 
         // Create player
         this.player = new Player(
@@ -168,11 +168,11 @@ export default class Level2Scene extends Phaser.Scene {
         });
     }
 
-    createHouse() {
-        this.house = this.add.sprite(this.levelConfig.house.x, this.levelConfig.house.y, 'house');
-        this.house.setOrigin(0, 0);
-        this.physics.add.existing(this.house, true);
-        this.house.body.setSize(70, 106);
+    createGoal() {
+        this.goal = this.add.sprite(this.levelConfig.goal.x, this.levelConfig.goal.y, 'flag');
+        this.goal.setOrigin(0, 1); // Set origin to bottom-left so pole extends upward
+        this.physics.add.existing(this.goal, true);
+        this.goal.body.setSize(42, 200); // Match new flag dimensions
     }
 
     setupCollisions() {
@@ -196,8 +196,8 @@ export default class Level2Scene extends Phaser.Scene {
         this.physics.add.overlap(this.player, this.coinGroup, this.collectCoin, null, this);
         this.physics.add.overlap(this.player, this.powerUpGroup, this.collectPowerUp, null, this);
 
-        // House (level transition)
-        this.physics.add.overlap(this.player, this.house, this.enterHouse, null, this);
+        // Goal
+        this.physics.add.overlap(this.player, this.goal, this.reachGoal, null, this);
     }
 
     hitBrick(player, brick) {
@@ -311,44 +311,42 @@ export default class Level2Scene extends Phaser.Scene {
         }
     }
 
-    enterHouse(player, house) {
-        // Prevent multiple triggers
-        if (this.isEnteringHouse) {
+    reachGoal(player, goal) {
+        // Prevent multiple triggers and disable pit death check during victory
+        if (this.isReachingGoal) {
             return;
         }
-        this.isEnteringHouse = true;
+        this.isReachingGoal = true;
 
         this.timerEvent.remove();
 
-        // Stop player movement
         player.setVelocity(0, 0);
         this.physics.world.disable(player);
 
-        // Move player into house
+        // Victory animation - slide down the flagpole to ground level
+        // Move player to goal.y - 32 to position at base of pole without exceeding level bounds
         this.tweens.add({
             targets: player,
-            x: house.x + 35,
-            alpha: 0,
-            duration: 500,
+            y: goal.y - 32,
+            duration: 1000,
             ease: 'Linear',
             onComplete: () => {
-                this.transitionToLevel3();
+                this.levelComplete();
             }
         });
     }
 
-    transitionToLevel3() {
-        // Calculate time bonus
+    levelComplete() {
         const bonus = this.timeLeft * 50;
         this.player.addScore(bonus);
 
         const width = this.cameras.main.width;
         const height = this.cameras.main.height;
 
-        const transitionText = this.add.text(
+        const victoryText = this.add.text(
             this.cameras.main.scrollX + width / 2,
             this.cameras.main.scrollY + height / 2,
-            'ENTERING LEVEL 3...\n\nTime Bonus: ' + bonus,
+            'GAME COMPLETE!\n\nTime Bonus: ' + bonus + '\nTotal Score: ' + this.player.score,
             {
                 fontSize: '32px',
                 fontFamily: 'Arial',
@@ -358,16 +356,11 @@ export default class Level2Scene extends Phaser.Scene {
                 strokeThickness: 6
             }
         );
-        transitionText.setOrigin(0.5);
+        victoryText.setOrigin(0.5);
 
-        // Store player data for next level
-        this.registry.set('playerScore', this.player.score);
-        this.registry.set('playerLives', this.player.lives);
-        this.registry.set('playerCoins', this.player.coins);
-        this.registry.set('playerIsPoweredUp', this.player.isPoweredUp);
-
-        this.time.delayedCall(2000, () => {
-            this.scene.start('Level3Scene');
+        this.time.delayedCall(4000, () => {
+            this.scene.start('MenuScene');
+            this.scene.stop('UIScene');
         });
     }
 
@@ -400,8 +393,8 @@ export default class Level2Scene extends Phaser.Scene {
         if (this.player) {
             this.player.update();
 
-            // Check if player fell into a pit (but not during house entering animation)
-            if (!this.isEnteringHouse && this.player.y > this.levelConfig.height) {
+            // Check if player fell into a pit (but not during victory animation)
+            if (!this.isReachingGoal && this.player.y > this.levelConfig.height) {
                 if (this.debugPitDeath) {
                     console.log(`[PIT DEATH] Player fell into pit at y=${this.player.y} (threshold=${this.levelConfig.height})`);
                 }

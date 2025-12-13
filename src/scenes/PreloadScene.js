@@ -158,29 +158,35 @@ export default class PreloadScene extends Phaser.Scene {
     createHouse() {
         const graphics = this.make.graphics({ x: 0, y: 0, add: false });
 
+        // House dimensions increased by 10%: 64x96 -> 70x106
+        const houseWidth = 70;
+        const houseHeight = 106;
+        const wallHeight = 70;
+        const roofHeight = 36;
+
         // House walls
         graphics.fillStyle(0xcd853f);
-        graphics.fillRect(0, 32, 64, 64);
+        graphics.fillRect(0, roofHeight, houseWidth, wallHeight);
 
-        // Door
+        // Door (scaled proportionally)
         graphics.fillStyle(0x8b4513);
-        graphics.fillRect(20, 56, 24, 40);
+        graphics.fillRect(22, 61, 26, 45);
 
         // Roof
         graphics.fillStyle(0xff0000);
-        graphics.fillTriangle(0, 32, 32, 0, 64, 32);
+        graphics.fillTriangle(0, roofHeight, houseWidth / 2, 0, houseWidth, roofHeight);
 
         // Roof outline
         graphics.lineStyle(2, 0x8b0000);
-        graphics.lineBetween(0, 32, 32, 0);
-        graphics.lineBetween(32, 0, 64, 32);
+        graphics.lineBetween(0, roofHeight, houseWidth / 2, 0);
+        graphics.lineBetween(houseWidth / 2, 0, houseWidth, roofHeight);
 
-        // Window
+        // Windows (scaled proportionally)
         graphics.fillStyle(0x87ceeb);
-        graphics.fillRect(10, 42, 12, 12);
-        graphics.fillRect(42, 42, 12, 12);
+        graphics.fillRect(11, 46, 13, 13);
+        graphics.fillRect(46, 46, 13, 13);
 
-        graphics.generateTexture('house', 64, 96);
+        graphics.generateTexture('house', houseWidth, houseHeight);
         graphics.destroy();
     }
 

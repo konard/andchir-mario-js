@@ -199,9 +199,9 @@ export default {
         { x: 6192, y: 312 }
     ],
 
-    // Goal (flag) - now grounded with flag pole touching the ground
-    goal: {
+    // House (level transition to Level 3)
+    house: {
         x: 6240,
-        y: 536
+        y: 462
     }
 };

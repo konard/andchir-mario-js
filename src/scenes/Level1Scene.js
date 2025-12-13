@@ -148,7 +148,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.house = this.add.sprite(this.levelConfig.house.x, this.levelConfig.house.y, 'house');
         this.house.setOrigin(0, 0);
         this.physics.add.existing(this.house, true);
-        this.house.body.setSize(64, 96);
+        this.house.body.setSize(70, 106);
     }
 
     createMovingPlatforms() {

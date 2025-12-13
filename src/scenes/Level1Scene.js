@@ -158,7 +158,8 @@ export default class Level1Scene extends Phaser.Scene {
                     this,
                     platform.x,
                     platform.y,
-                    platform.width
+                    platform.width,
+                    platform.speed
                 );
                 this.movingPlatformGroup.add(movingPlatform);
                 // Re-apply velocity after adding to group (group.add resets body properties)

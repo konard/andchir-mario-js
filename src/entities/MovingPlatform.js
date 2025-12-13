@@ -1,5 +1,5 @@
 export default class MovingPlatform extends Phaser.Physics.Arcade.Sprite {
-    constructor(scene, x, y, width = 96) {
+    constructor(scene, x, y, width = 96, speed = 50) {
         super(scene, x, y, 'movingPlatform');
 
         scene.add.existing(this);
@@ -18,7 +18,7 @@ export default class MovingPlatform extends Phaser.Physics.Arcade.Sprite {
         this.setDepth(10);
 
         // Movement properties
-        this.speed = 50; // pixels per second
+        this.speed = speed; // pixels per second (now configurable)
         this.startX = x;
         this.travelDistance = width; // Move distance approximately equal to platform width
         this.direction = 1; // 1 for right, -1 for left

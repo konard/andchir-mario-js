@@ -28,7 +28,7 @@ export default class Level1Scene extends Phaser.Scene {
         this.enemyGroup = this.physics.add.group();
         this.pipeGroup = this.physics.add.staticGroup();
         this.powerUpGroup = this.physics.add.group();
-        this.movingPlatformGroup = this.physics.add.group();
+        this.movingPlatforms = []; // Simple array instead of group
 
         // Build level
         this.createGround();
@@ -150,14 +150,14 @@ export default class Level1Scene extends Phaser.Scene {
 
     createMovingPlatforms() {
         if (this.levelConfig.movingPlatforms) {
-            this.levelConfig.movingPlatforms.forEach(platform => {
+            this.levelConfig.movingPlatforms.forEach((platform, index) => {
                 const movingPlatform = new MovingPlatform(
                     this,
                     platform.x,
                     platform.y,
                     platform.width
                 );
-                this.movingPlatformGroup.add(movingPlatform);
+                this.movingPlatforms.push(movingPlatform);
             });
         }
     }
@@ -168,7 +168,10 @@ export default class Level1Scene extends Phaser.Scene {
         this.physics.add.collider(this.player, this.brickGroup, this.hitBrick, null, this);
         this.physics.add.collider(this.player, this.questionGroup, this.hitQuestion, null, this);
         this.physics.add.collider(this.player, this.pipeGroup);
-        this.physics.add.collider(this.player, this.movingPlatformGroup);
+        // Add collision for each moving platform individually
+        this.movingPlatforms.forEach(platform => {
+            this.physics.add.collider(this.player, platform);
+        });
 
         // Enemy collisions
         this.physics.add.collider(this.enemyGroup, this.groundGroup);
@@ -409,7 +412,7 @@ export default class Level1Scene extends Phaser.Scene {
         });
 
         // Update moving platforms
-        this.movingPlatformGroup.getChildren().forEach(platform => {
+        this.movingPlatforms.forEach(platform => {
             if (platform.update) {
                 platform.update();
             }

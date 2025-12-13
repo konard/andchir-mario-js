@@ -7,10 +7,13 @@ export default class MovingPlatform extends Phaser.Physics.Arcade.Sprite {
 
         // Set platform properties
         this.setOrigin(0, 0);
-        this.setDisplaySize(width, 16); // Ensure sprite displays at correct size
-        this.body.setSize(width, 16); // Set physics body size to match display
+        this.setDisplaySize(width, 16);
+        this.body.setSize(width, 16);
         this.setImmovable(true);
-        this.body.allowGravity = false;
+
+        // Counter the world gravity by setting opposite gravity on the body
+        // World gravity is 1000, so set -1000 to cancel it out
+        this.body.setGravityY(-1000);
 
         // Movement properties
         this.speed = 50; // pixels per second

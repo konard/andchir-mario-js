@@ -187,15 +187,13 @@ export default class PreloadScene extends Phaser.Scene {
     createMovingPlatform() {
         const graphics = this.make.graphics({ x: 0, y: 0, add: false });
 
-        // Brown platform (similar to ground/bricks color) with darker outline
-        graphics.fillStyle(0xd2691e); // Chocolate/brown color
+        // Brown platform matching game aesthetic
+        graphics.fillStyle(0xd2691e);
         graphics.fillRect(0, 0, 96, 16);
 
-        // Darker brown border for depth
         graphics.fillStyle(0xa0522d);
         graphics.fillRect(2, 2, 92, 12);
 
-        // Lighter brown highlight on top
         graphics.fillStyle(0xcd853f);
         graphics.fillRect(4, 4, 88, 4);
 

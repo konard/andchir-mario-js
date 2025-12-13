@@ -17,8 +17,8 @@ export default {
     grounds: [
         // Main ground
         { x: 0, y: 568, width: 3200, height: 32 },
-        // Large gap for moving platforms (from 3200 to 3600 = 400 pixels)
-        { x: 3600, y: 568, width: 1400, height: 32 },
+        // Large gap for moving platforms (from 3200 to 3800 = 600 pixels)
+        { x: 3800, y: 568, width: 1400, height: 32 },
         // Floating platform
         { x: 800, y: 400, width: 192, height: 32 },
         { x: 1200, y: 350, width: 128, height: 32 },
@@ -93,11 +93,11 @@ export default {
         { x: 3100, y: 504, height: 64 }
     ],
 
-    // Moving platforms (cross the gap between x=3200 and x=3600)
+    // Moving platforms (cross the gap between x=3200 and x=3800)
     movingPlatforms: [
-        { x: 3220, y: 500, width: 96, speed: 45 },  // First platform (slowest)
-        { x: 3340, y: 480, width: 96, speed: 50 },  // Second platform (medium speed)
-        { x: 3460, y: 500, width: 96, speed: 55 }   // Third platform (fastest)
+        { x: 3220, y: 500, width: 96, speed: 50 },  // First platform (slowest)
+        { x: 3420, y: 460, width: 96, speed: 55 },  // Second platform (medium speed, lower)
+        { x: 3620, y: 510, width: 96, speed: 60 }   // Third platform (fastest, higher)
     ],
 
     // House (level transition to Level 2)

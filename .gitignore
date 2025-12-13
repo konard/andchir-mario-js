@@ -3,6 +3,10 @@ node_modules/
 
 # Build output
 dist/
+dist-electron/
+
+# Electron
+*.log
 
 # Environment variables
 .env

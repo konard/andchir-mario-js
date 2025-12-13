@@ -66,6 +66,8 @@ export default class Level1Scene extends Phaser.Scene {
         // Store reference for UI
         this.registry.set('player', this.player);
         this.registry.set('timeLeft', this.timeLeft);
+
+        this.physics.world.createDebugGraphic(); // Debug only (comment this line after debugging)
     }
 
     createGround() {

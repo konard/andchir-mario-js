@@ -17,10 +17,10 @@ export default class MenuScene extends Phaser.Scene {
         background.setScale(scaleY);
 
         // Add semi-transparent background for menu area
-        const menuBg = this.add.rectangle(width / 2, height / 2 + 50, 500, 300, 0x000000, 0.7);
+        const menuBg = this.add.rectangle(width / 2, height / 2 + 150, 500, 300, 0x000000, 0.7);
 
         // Menu title
-        const menuTitle = this.add.text(width / 2, height / 2 - 50, 'SELECT GAME MODE', {
+        const menuTitle = this.add.text(width / 2, height / 2 - 150, 'SELECT GAME MODE', {
             fontSize: '24px',
             fontFamily: 'Arial',
             fill: '#ffff00',
@@ -30,7 +30,7 @@ export default class MenuScene extends Phaser.Scene {
         menuTitle.setOrigin(0.5);
 
         // Menu options
-        this.normalGameText = this.add.text(width / 2, height / 2 + 20, 'Normal game', {
+        this.normalGameText = this.add.text(width / 2, height / 2 + 120, 'Normal game', {
             fontSize: '28px',
             fontFamily: 'Arial',
             fill: '#ffffff',
@@ -39,7 +39,7 @@ export default class MenuScene extends Phaser.Scene {
         });
         this.normalGameText.setOrigin(0.5);
 
-        this.randomLevelsText = this.add.text(width / 2, height / 2 + 60, 'Random levels', {
+        this.randomLevelsText = this.add.text(width / 2, height / 2 + 160, 'Random levels', {
             fontSize: '28px',
             fontFamily: 'Arial',
             fill: '#ffffff',
@@ -52,7 +52,7 @@ export default class MenuScene extends Phaser.Scene {
         this.menuOptions = [this.normalGameText, this.randomLevelsText];
 
         // Controls instruction
-        const controlsText = this.add.text(width / 2, height / 2 + 135,
+        const controlsText = this.add.text(width / 2, height / 2 + 235,
             'UP/DOWN: Select Mode\nSPACE: Start Game\n\nArrow Keys: Move\nSpace: Jump', {
             fontSize: '10px',
             fontFamily: 'Arial',

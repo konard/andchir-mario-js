@@ -12,11 +12,9 @@ export default class MenuScene extends Phaser.Scene {
 
         // Add background image
         const background = this.add.image(width / 2, height / 2, 'menuBackground');
-        // Scale to cover the entire screen while maintaining aspect ratio
-        const scaleX = width / background.width;
+        // Scale to fit height exactly while maintaining aspect ratio
         const scaleY = height / background.height;
-        const scale = Math.max(scaleX, scaleY);
-        background.setScale(scale);
+        background.setScale(scaleY);
 
         // Add semi-transparent background for menu area
         const menuBg = this.add.rectangle(width / 2, height / 2 + 50, 500, 300, 0x000000, 0.7);

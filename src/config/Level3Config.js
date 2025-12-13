@@ -269,9 +269,9 @@ export default {
         { x: 6992, y: 312 }
     ],
 
-    // Goal (flag) - end of the game
-    goal: {
+    // House (level completion) - end of the game
+    house: {
         x: 7040,
-        y: 536
+        y: 462
     }
 };

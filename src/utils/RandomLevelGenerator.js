@@ -116,9 +116,9 @@ export default class RandomLevelGenerator {
             coins: [],
             enemies: [],
             pipes: [],
-            goal: {
+            house: {
                 x: this.LEVEL_WIDTH - 200,
-                y: 536  // Position on ground like in Level 2
+                y: 462  // Position on ground like in Level 1 and Level 2
             }
         };
 
